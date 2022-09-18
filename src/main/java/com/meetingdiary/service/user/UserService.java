@@ -1,11 +1,12 @@
 package com.meetingdiary.service.user;
 
-import com.meetingdiary.datatransferobject.MeetingDTO;
 import com.meetingdiary.domainobject.MeetingDO;
 import com.meetingdiary.domainobject.UserDO;
 import com.meetingdiary.exception.ConstraintsViolationException;
+import com.meetingdiary.exception.EmailInvalidException;
 import com.meetingdiary.exception.EntityNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserService {
@@ -16,5 +17,7 @@ public interface UserService {
 
     List<MeetingDO> findMeetings(Long userId) throws EntityNotFoundException;
 
-    void create(UserDO carDO) throws ConstraintsViolationException;
+    UserDO create(UserDO carDO) throws ConstraintsViolationException, EmailInvalidException;
+
+    UserDO login(UserDO userDO) throws EntityNotFoundException, EmailInvalidException;
 }

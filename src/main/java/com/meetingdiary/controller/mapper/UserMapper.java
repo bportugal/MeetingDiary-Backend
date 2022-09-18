@@ -21,6 +21,7 @@ public class UserMapper {
     public static UserDTO makeUserDTO(UserDO userDO) {
 
         UserDTO.UserDTOBuilder dtoBuilder = UserDTO.newBuilder()
+                .setId(userDO.getId())
                 .setUsername(userDO.getUsername());
 
         return dtoBuilder.createUserDTO();

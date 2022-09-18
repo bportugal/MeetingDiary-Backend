@@ -12,7 +12,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MeetingDTO {
 
-    @NotNull(message = "Username can not be null!")
+    @NotNull(message = "Meeting date can not be null!")
     private LocalDateTime meetingDate;
 
     private UserDTOForMeeting user;

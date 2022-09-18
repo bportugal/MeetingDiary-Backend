@@ -3,17 +3,20 @@ package com.meetingdiary.domainobject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "PersonMet")
+@Table(name = "PersonMet", uniqueConstraints = @UniqueConstraint(name = "uc_name", columnNames = {"name"}))
 public class PersonMetDO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long id;
+    @Column(unique = true)
+    @NotNull(message = "Name can not be null!")
     private String name;
 
     private double latitude;

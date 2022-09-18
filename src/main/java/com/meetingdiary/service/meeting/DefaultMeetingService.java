@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -47,7 +48,13 @@ public class DefaultMeetingService implements MeetingService {
         try {
             UserDO user = userRepository.findByUsername(meetingDO.getUser().getUsername().toUpperCase());
             if (user == null) {
-                throw new EntityNotFoundException("Manufacturer does not exist!");
+                throw new EntityNotFoundException("User does not exist!");
+            }
+            if (meetingDO.getMeetingDate() == null) {
+                throw new ConstraintsViolationException("Can not create meeting without date");
+            }
+            if (meetingDO.getPersonMetList().isEmpty()) {
+                throw new ConstraintsViolationException("Can not create meeting without person");
             }
             meetingDO.setUser(user);
             MeetingDO meetingDO1 = meetingRepository.save(meetingDO);
@@ -55,7 +62,7 @@ public class DefaultMeetingService implements MeetingService {
             checkIfAllPersonsAlreadyInDatabase(meetingDO.getPersonMetList(), meetingDO1);
         } catch (DataIntegrityViolationException e) {
             LOG.warn("ConstraintsViolationException while creating a meeting: {}", meetingDO, e);
-            throw new ConstraintsViolationException(e.getMessage());
+            throw new ConstraintsViolationException("Meeting already exists");
         } catch (EntityNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -65,13 +72,19 @@ public class DefaultMeetingService implements MeetingService {
     private void checkIfAllPersonsAlreadyInDatabase(List<PersonMetDO> personMetList, MeetingDO meetingDO) {
         CopyOnWriteArrayList<PersonMetDO> copyList = new CopyOnWriteArrayList<>(personMetList);
         for (PersonMetDO person : copyList) {
+
             person.addMeeting(meetingDO);
-            PersonMetDO personCreated = null;
-            if (personMetRepository.findByName(person.getName()) == null) {
-                personCreated = personMetRepository.save(person);
-            }
-            meetingDO.addPerson(personCreated);
+            PersonMetDO personFromDB = personMetRepository.save(person);
+
+            //personFromDB.addMeeting(meetingDO);
+            meetingDO.addPerson(personFromDB);
         }
+    }
+
+    @Override
+    public List<MeetingDO> findMeetingBetweenDates(LocalDateTime meetingDateStart, LocalDateTime meetingDateEnd, Long id) {
+        List<MeetingDO> list = meetingRepository.findAllByMeetingDateBetweenAndUserId(meetingDateStart, meetingDateEnd, id);
+        return list;
     }
 
 }

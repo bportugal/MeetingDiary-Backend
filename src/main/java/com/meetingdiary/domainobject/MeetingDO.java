@@ -1,7 +1,6 @@
 package com.meetingdiary.domainobject;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.meetingdiary.util.GeoCoordinate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,9 +23,11 @@ public class MeetingDO {
     /*@ManyToMany(mappedBy = "meetings")*/
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @NotNull
     private UserDO user;
 
     @ManyToMany(mappedBy = "meetings", fetch = FetchType.EAGER)
+    @NotNull
     private List<PersonMetDO> personMetList = new ArrayList<>();
 
     private MeetingDO() {

@@ -2,11 +2,15 @@ package com.meetingdiary.datatransferobject;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.validation.constraints.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long id;
 
     @NotNull(message = "Username can not be null!")
     private String username;
@@ -17,8 +21,13 @@ public class UserDTO {
     private UserDTO() {
     }
 
-    public UserDTO(String username) {
+    public UserDTO(Long id, String username) {
+        this.id = id;
         this.username = username;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getUsername() {
@@ -35,7 +44,14 @@ public class UserDTO {
 
     public static class UserDTOBuilder {
 
+        private Long id;
+
         private String username;
+
+        public UserDTOBuilder setId(Long id) {
+            this.id = id;
+            return this;
+        }
 
         public UserDTOBuilder setUsername(String username) {
             this.username = username;
@@ -44,7 +60,7 @@ public class UserDTO {
 
 
         public UserDTO createUserDTO() {
-            return new UserDTO(username);
+            return new UserDTO(id, username);
         }
     }
 }

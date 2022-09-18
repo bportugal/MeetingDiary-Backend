@@ -25,6 +25,7 @@ public class UserDO {
 
     @Column
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotNull
     private String password;
 
     /*@ManyToMany

@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface MeetingRepository extends JpaRepository<MeetingDO, Long> {
     //List<MeetingDO> findAllByMeetingDateBetweenAndUserId(LocalDateTime meetingDateStart, LocalDateTime meetingDateEnd);
+
+    List<MeetingDO> findAllByMeetingDateBetweenAndUserId(LocalDateTime meetingDateStart, LocalDateTime meetingDateEnd, Long id);
 }
