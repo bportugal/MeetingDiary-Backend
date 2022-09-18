@@ -48,8 +48,11 @@ public class MeetingController {
     @Operation(summary = "Add new Meeting")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createMeeting(@Valid @RequestBody MeetingDTO meetingDTO) throws ConstraintsViolationException, EntityNotFoundException {
-        MeetingDO meetingDO = MeetingMapper.makeMeetingDO(meetingDTO);
+    public void createMeeting(@Valid @RequestBody List<MeetingDTO> meetingDTO) throws ConstraintsViolationException, EntityNotFoundException {
+        List<MeetingDO> meetingDO = MeetingMapper.makeMeetingDOList(meetingDTO);
+        if(meetingDO.isEmpty()) {
+            throw new ConstraintsViolationException("No meeting was sent");
+        }
         meetingService.create(meetingDO);
     }
 

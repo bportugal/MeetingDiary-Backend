@@ -13,7 +13,7 @@ public interface MeetingService {
 
     MeetingDO findById(Long meetingId) throws EntityNotFoundException;
 
-    void create(MeetingDO meetingDO) throws ConstraintsViolationException, EntityNotFoundException;
+    void create(List<MeetingDO> meetingDO) throws ConstraintsViolationException, EntityNotFoundException;
 
     List<MeetingDO> findMeetingBetweenDates(LocalDateTime meetingDateStart, LocalDateTime meetingDateEnd, Long id) throws EntityNotFoundException;
 

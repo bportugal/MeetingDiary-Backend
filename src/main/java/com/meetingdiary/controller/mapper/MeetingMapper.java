@@ -37,4 +37,10 @@ public class MeetingMapper {
                 .map(MeetingMapper::makeMeetingDTO)
                 .collect(Collectors.toList());
     }
+
+    public static List<MeetingDO> makeMeetingDOList(Collection<MeetingDTO> meetings) {
+        return meetings.stream()
+                .map(MeetingMapper::makeMeetingDO)
+                .collect(Collectors.toList());
+    }
 }

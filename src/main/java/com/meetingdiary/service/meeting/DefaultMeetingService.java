@@ -38,18 +38,20 @@ public class DefaultMeetingService implements MeetingService {
 
     @Override
     @Transactional
-    public void create(MeetingDO meetingDO) throws ConstraintsViolationException, EntityNotFoundException {
+    public void create(List<MeetingDO> meetingDOList) throws ConstraintsViolationException, EntityNotFoundException {
         try {
-            UserDO user = userRepository.findByUsername(meetingDO.getUser().getUsername().toUpperCase());
+            UserDO user = userRepository.findByUsername(meetingDOList.get(0).getUser().getUsername().toUpperCase());
             if (user == null) {
                 throw new EntityNotFoundException("User does not exist!");
             }
-            checkMeetingExceptions(meetingDO);
-            meetingDO.setUser(user);
-            MeetingDO meetingDO1 = meetingRepository.save(meetingDO);
-            user.addMeeting(meetingDO1);
+            for (MeetingDO meetingDO : meetingDOList) {
+                checkMeetingExceptions(meetingDO);
+                meetingDO.setUser(user);
+            }
+            List<MeetingDO> meetingDO1 = meetingRepository.saveAll(meetingDOList);
+            //user.addMeeting(meetingDO1);
         } catch (DataIntegrityViolationException e) {
-            LOG.warn("ConstraintsViolationException while creating a meeting: {}", meetingDO, e);
+            LOG.warn("ConstraintsViolationException while creating a meeting: {}", meetingDOList, e);
             throw new ConstraintsViolationException("Meeting already exists");
         } catch (EntityNotFoundException e) {
             throw new EntityNotFoundException(e.getMessage());
