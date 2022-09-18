@@ -41,12 +41,6 @@ public class UserController {
         return UserMapper.makeUserDTO(userService.findById(userId));
     }
 
-    @Operation(summary = "Get User's meetings")
-    @GetMapping("/meetings")
-    public List<MeetingDTO> getMeetings(@RequestParam Long userId) throws EntityNotFoundException {
-        return MeetingMapper.makeMeetingDTOList(userService.findMeetings(userId));
-    }
-
     @Operation(summary = "Sign Up - Add new User")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

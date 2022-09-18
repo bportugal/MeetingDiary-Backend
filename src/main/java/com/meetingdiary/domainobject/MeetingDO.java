@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "Meetings")
@@ -26,17 +24,24 @@ public class MeetingDO {
     @NotNull
     private UserDO user;
 
-    @ManyToMany(mappedBy = "meetings", fetch = FetchType.EAGER)
-    @NotNull
-    private List<PersonMetDO> personMetList = new ArrayList<>();
+    @NotNull(message = "Name can not be null!")
+    private String personName;
+
+    @NotNull(message = "latitude can not be null!")
+    private Double latitude;
+
+    @NotNull(message = "longitude can not be null!")
+    private Double longitude;
 
     private MeetingDO() {
     }
 
-    public MeetingDO(LocalDateTime meetingDate, UserDO user, List<PersonMetDO> personMetList) {
+    public MeetingDO(LocalDateTime meetingDate, UserDO user, String personName, Double latitude, Double longitude) {
         this.meetingDate = meetingDate;
         this.user = user;
-        this.personMetList = personMetList;
+        this.personName = personName;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Long getId() {
@@ -63,11 +68,27 @@ public class MeetingDO {
         this.user = user;
     }
 
-    public List<PersonMetDO> getPersonMetList() {
-        return personMetList;
+    public String getPersonName() {
+        return personName;
     }
 
-    public void addPerson(PersonMetDO personMetDO) {
-        this.personMetList.add(personMetDO);
+    public void setPersonName(String personName) {
+        this.personName = personName;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

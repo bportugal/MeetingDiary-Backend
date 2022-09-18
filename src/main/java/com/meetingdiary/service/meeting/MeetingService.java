@@ -6,13 +6,16 @@ import com.meetingdiary.exception.ConstraintsViolationException;
 import com.meetingdiary.exception.EntityNotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 public interface MeetingService {
 
     MeetingDO findById(Long meetingId) throws EntityNotFoundException;
 
-    void create(MeetingDO meetingDO) throws ConstraintsViolationException;
+    void create(MeetingDO meetingDO) throws ConstraintsViolationException, EntityNotFoundException;
 
-    List<MeetingDO> findMeetingBetweenDates(LocalDateTime meetingDateStart, LocalDateTime meetingDateEnd, Long id);
+    List<MeetingDO> findMeetingBetweenDates(LocalDateTime meetingDateStart, LocalDateTime meetingDateEnd, Long id) throws EntityNotFoundException;
+
+    List<MeetingDO> findUserMeetings(Long userId) throws EntityNotFoundException;
 }

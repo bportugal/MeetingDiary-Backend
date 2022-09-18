@@ -1,7 +1,6 @@
 package com.meetingdiary.service.user;
 
 import com.meetingdiary.dataaccessobject.UserRepository;
-import com.meetingdiary.domainobject.MeetingDO;
 import com.meetingdiary.domainobject.UserDO;
 import com.meetingdiary.exception.ConstraintsViolationException;
 import com.meetingdiary.exception.EmailInvalidException;
@@ -13,11 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Service
-public class DefaultUserService implements UserService{
+public class DefaultUserService implements UserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultUserService.class);
 
@@ -41,12 +37,6 @@ public class DefaultUserService implements UserService{
         } else {
             return user;
         }
-    }
-
-    @Override
-    public List<MeetingDO> findMeetings(Long userId) throws EntityNotFoundException {
-        UserDO userDO = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Could not find entity with id: " + userId));
-        return userDO.getMeetings();
     }
 
     @Override

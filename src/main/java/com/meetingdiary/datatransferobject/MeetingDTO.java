@@ -1,13 +1,9 @@
 package com.meetingdiary.datatransferobject;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.meetingdiary.domainobject.PersonMetDO;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MeetingDTO {
@@ -17,14 +13,20 @@ public class MeetingDTO {
 
     private UserDTOForMeeting user;
 
-    private List<PersonMetDO> personList = new ArrayList<>();
+    private String personName;
+
+    private Double latitude;
+
+    private Double longitude;
 
     private MeetingDTO() {}
 
-    private MeetingDTO(LocalDateTime meetingDate, UserDTOForMeeting user, List<PersonMetDO> personList) {
+    private MeetingDTO(LocalDateTime meetingDate, UserDTOForMeeting user, String personName, Double latitude, Double longitude) {
         this.meetingDate = meetingDate;
         this.user = user;
-        this.personList = personList;
+        this.personName = personName;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public static MeetingDTOBuilder newBuilder() {
@@ -40,15 +42,28 @@ public class MeetingDTO {
         return user;
     }
 
-    public List<PersonMetDO> getPersonList() {
-        return personList;
+    public String getPersonName() {
+        return personName;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
     }
 
     public static class MeetingDTOBuilder {
         private LocalDateTime meetingDate;
 
         private UserDTOForMeeting userDTO;
-        private List<PersonMetDO> personList = new ArrayList<>();
+
+        private String personName;
+
+        private Double latitude;
+
+        private Double longitude;
 
         public MeetingDTOBuilder setMeetingDate(LocalDateTime meetingDate) {
             this.meetingDate = meetingDate;
@@ -60,13 +75,23 @@ public class MeetingDTO {
             return this;
         }
 
-        public MeetingDTOBuilder setPersonList(List<PersonMetDO> personList) {
-            this.personList = personList;
+        public MeetingDTOBuilder setPersonName(String personName) {
+            this.personName = personName;
+            return this;
+        }
+
+        public MeetingDTOBuilder setLatitude(Double latitude) {
+            this.latitude = latitude;
+            return this;
+        }
+
+        public MeetingDTOBuilder setLongitude(Double longitude) {
+            this.longitude = longitude;
             return this;
         }
 
         public MeetingDTO createMeetingDTO() {
-            return new MeetingDTO(meetingDate, userDTO, personList);
+            return new MeetingDTO(meetingDate, userDTO, personName, latitude, longitude);
         }
     }
 }

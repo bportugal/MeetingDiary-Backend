@@ -33,16 +33,22 @@ public class MeetingController {
         this.meetingService = meetingService;
     }
 
-    @Operation(summary = "Get Meeting by Id")
+    @Operation(summary = "Get Meeting by its Id")
     @GetMapping("/")
     public MeetingDTO getMeeting(@RequestParam Long meetingId) throws EntityNotFoundException {
         return MeetingMapper.makeMeetingDTO(meetingService.findById(meetingId));
     }
 
+    @Operation(summary = "Get User's meetings")
+    @GetMapping("/user")
+    public List<MeetingDTO> getMeetingsOfUser(@RequestParam Long userId) throws EntityNotFoundException {
+        return MeetingMapper.makeMeetingDTOList(meetingService.findUserMeetings(userId));
+    }
+
     @Operation(summary = "Add new Meeting")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createMeeting(@Valid @RequestBody MeetingDTO meetingDTO) throws ConstraintsViolationException {
+    public void createMeeting(@Valid @RequestBody MeetingDTO meetingDTO) throws ConstraintsViolationException, EntityNotFoundException {
         MeetingDO meetingDO = MeetingMapper.makeMeetingDO(meetingDTO);
         meetingService.create(meetingDO);
     }
@@ -55,7 +61,7 @@ public class MeetingController {
                                         @RequestParam
                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                         LocalDateTime meetingDateEnd,
-                                        @RequestParam Long id) throws EntityNotFoundException {
-        return MeetingMapper.makeMeetingDTOList(meetingService.findMeetingBetweenDates(meetingDateStart, meetingDateEnd, id));
+                                        @RequestParam Long userId) throws EntityNotFoundException {
+        return MeetingMapper.makeMeetingDTOList(meetingService.findMeetingBetweenDates(meetingDateStart, meetingDateEnd, userId));
     }
 }

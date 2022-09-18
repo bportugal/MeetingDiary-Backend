@@ -15,8 +15,6 @@ public interface UserService {
 
     UserDO findByUsername(String username) throws EntityNotFoundException;
 
-    List<MeetingDO> findMeetings(Long userId) throws EntityNotFoundException;
-
     UserDO create(UserDO carDO) throws ConstraintsViolationException, EmailInvalidException;
 
     UserDO login(UserDO userDO) throws EntityNotFoundException, EmailInvalidException;

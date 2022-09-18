@@ -15,7 +15,7 @@ public class MeetingMapper {
 
         UserDO userDO = UserMapper.makeUserDOForMeeting(meetingDTO.getUser());
 
-        return new MeetingDO(meetingDTO.getMeetingDate(), userDO, meetingDTO.getPersonList());
+        return new MeetingDO(meetingDTO.getMeetingDate(), userDO, meetingDTO.getPersonName(), meetingDTO.getLatitude(), meetingDTO.getLongitude());
     }
 
     public static MeetingDTO makeMeetingDTO(MeetingDO meetingDO) {
@@ -24,8 +24,10 @@ public class MeetingMapper {
 
         MeetingDTO.MeetingDTOBuilder dtoBuilder = MeetingDTO.newBuilder()
                 .setMeetingDate(meetingDO.getMeetingDate())
-                .setPersonList(meetingDO.getPersonMetList())
-                .setUserDTO(userDTO);
+                .setPersonName(meetingDO.getPersonName())
+                .setUserDTO(userDTO)
+                .setLatitude(meetingDO.getLatitude())
+                .setLongitude(meetingDO.getLongitude());
 
         return dtoBuilder.createMeetingDTO();
     }

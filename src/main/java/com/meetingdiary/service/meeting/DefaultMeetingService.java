@@ -1,10 +1,8 @@
 package com.meetingdiary.service.meeting;
 
 import com.meetingdiary.dataaccessobject.MeetingRepository;
-import com.meetingdiary.dataaccessobject.PersonMetRepository;
 import com.meetingdiary.dataaccessobject.UserRepository;
 import com.meetingdiary.domainobject.MeetingDO;
-import com.meetingdiary.domainobject.PersonMetDO;
 import com.meetingdiary.domainobject.UserDO;
 import com.meetingdiary.exception.ConstraintsViolationException;
 import com.meetingdiary.exception.EntityNotFoundException;
@@ -17,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class DefaultMeetingService implements MeetingService {
@@ -26,14 +23,11 @@ public class DefaultMeetingService implements MeetingService {
 
     private final MeetingRepository meetingRepository;
 
-    private final PersonMetRepository personMetRepository;
-
     private final UserRepository userRepository;
 
     @Autowired
-    public DefaultMeetingService(final MeetingRepository meetingRepository, final PersonMetRepository personMetRepository, final UserRepository userRepository) {
+    public DefaultMeetingService(final MeetingRepository meetingRepository, final UserRepository userRepository) {
         this.meetingRepository = meetingRepository;
-        this.personMetRepository = personMetRepository;
         this.userRepository = userRepository;
     }
 
@@ -44,47 +38,55 @@ public class DefaultMeetingService implements MeetingService {
 
     @Override
     @Transactional
-    public void create(MeetingDO meetingDO) throws ConstraintsViolationException {
+    public void create(MeetingDO meetingDO) throws ConstraintsViolationException, EntityNotFoundException {
         try {
             UserDO user = userRepository.findByUsername(meetingDO.getUser().getUsername().toUpperCase());
             if (user == null) {
                 throw new EntityNotFoundException("User does not exist!");
             }
-            if (meetingDO.getMeetingDate() == null) {
-                throw new ConstraintsViolationException("Can not create meeting without date");
-            }
-            if (meetingDO.getPersonMetList().isEmpty()) {
-                throw new ConstraintsViolationException("Can not create meeting without person");
-            }
+            checkMeetingExceptions(meetingDO);
             meetingDO.setUser(user);
             MeetingDO meetingDO1 = meetingRepository.save(meetingDO);
             user.addMeeting(meetingDO1);
-            checkIfAllPersonsAlreadyInDatabase(meetingDO.getPersonMetList(), meetingDO1);
         } catch (DataIntegrityViolationException e) {
             LOG.warn("ConstraintsViolationException while creating a meeting: {}", meetingDO, e);
             throw new ConstraintsViolationException("Meeting already exists");
         } catch (EntityNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new EntityNotFoundException(e.getMessage());
         }
     }
 
-    @Transactional
-    private void checkIfAllPersonsAlreadyInDatabase(List<PersonMetDO> personMetList, MeetingDO meetingDO) {
-        CopyOnWriteArrayList<PersonMetDO> copyList = new CopyOnWriteArrayList<>(personMetList);
-        for (PersonMetDO person : copyList) {
-
-            person.addMeeting(meetingDO);
-            PersonMetDO personFromDB = personMetRepository.save(person);
-
-            //personFromDB.addMeeting(meetingDO);
-            meetingDO.addPerson(personFromDB);
+    private void checkMeetingExceptions(MeetingDO meetingDO) throws ConstraintsViolationException {
+        if (meetingDO.getMeetingDate() == null) {
+            throw new ConstraintsViolationException("Can not create meeting without date");
+        }
+        if (meetingDO.getPersonName().isEmpty()) {
+            throw new ConstraintsViolationException("Can not create meeting without person");
+        }
+        if (meetingDO.getLatitude() == null) {
+            throw new ConstraintsViolationException("Can not create meeting without latitude of the meeting");
+        }
+        if (meetingDO.getLongitude() == null) {
+            throw new ConstraintsViolationException("Can not create meeting without longitude of the meeting");
         }
     }
 
     @Override
-    public List<MeetingDO> findMeetingBetweenDates(LocalDateTime meetingDateStart, LocalDateTime meetingDateEnd, Long id) {
-        List<MeetingDO> list = meetingRepository.findAllByMeetingDateBetweenAndUserId(meetingDateStart, meetingDateEnd, id);
-        return list;
+    public List<MeetingDO> findMeetingBetweenDates(LocalDateTime meetingDateStart, LocalDateTime meetingDateEnd, Long id) throws EntityNotFoundException {
+        try {
+            return meetingRepository.findAllByMeetingDateBetweenAndUserId(meetingDateStart, meetingDateEnd, id);
+        } catch (EntityNotFoundException e) {
+            throw new EntityNotFoundException("User doesn't exist.");
+        }
+    }
+
+    @Override
+    public List<MeetingDO> findUserMeetings(Long userId) throws EntityNotFoundException {
+        try {
+            return meetingRepository.findByUserId(userId);
+        } catch (EntityNotFoundException exception) {
+            throw new EntityNotFoundException("User doesn't exist.");
+        }
     }
 
 }
