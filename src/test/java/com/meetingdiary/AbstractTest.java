@@ -33,6 +33,7 @@ public class AbstractTest {
 
     protected String mapToJson(Object obj) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
         return objectMapper.writeValueAsString(obj);
     }
 

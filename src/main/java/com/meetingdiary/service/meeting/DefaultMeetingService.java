@@ -62,7 +62,7 @@ public class DefaultMeetingService implements MeetingService {
         if (meetingDO.getMeetingDate() == null) {
             throw new ConstraintsViolationException("Can not create meeting without date");
         }
-        if (meetingDO.getPersonName().isEmpty()) {
+        if (meetingDO.getPersonName() == null || meetingDO.getPersonName().isBlank()) {
             throw new ConstraintsViolationException("Can not create meeting without person");
         }
         if (meetingDO.getLatitude() == null) {
@@ -75,20 +75,14 @@ public class DefaultMeetingService implements MeetingService {
 
     @Override
     public List<MeetingDO> findMeetingBetweenDates(LocalDateTime meetingDateStart, LocalDateTime meetingDateEnd, Long id) throws EntityNotFoundException {
-        try {
-            return meetingRepository.findAllByMeetingDateBetweenAndUserId(meetingDateStart, meetingDateEnd, id);
-        } catch (EntityNotFoundException e) {
-            throw new EntityNotFoundException("User doesn't exist.");
-        }
+        userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User doesn't exist."));
+        return meetingRepository.findAllByMeetingDateBetweenAndUserId(meetingDateStart, meetingDateEnd, id);
     }
 
     @Override
     public List<MeetingDO> findUserMeetings(Long userId) throws EntityNotFoundException {
-        try {
-            return meetingRepository.findByUserId(userId);
-        } catch (EntityNotFoundException exception) {
-            throw new EntityNotFoundException("User doesn't exist.");
-        }
+        userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User doesn't exist."));
+        return meetingRepository.findByUserId(userId);
     }
 
 }

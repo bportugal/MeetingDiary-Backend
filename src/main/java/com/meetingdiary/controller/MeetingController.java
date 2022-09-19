@@ -58,7 +58,7 @@ public class MeetingController {
 
     @Operation(summary = "Get User's meetings between 2 dates")
     @GetMapping("/dates")
-    public List<MeetingDTO> getMeetings(@RequestParam
+    public List<MeetingDTO> getMeetingsBetweenDates(@RequestParam
                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                         LocalDateTime meetingDateStart,
                                         @RequestParam

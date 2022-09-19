@@ -42,12 +42,7 @@ public class DefaultUserService implements UserService {
     @Override
     public UserDO create(UserDO userDO) throws ConstraintsViolationException, EmailInvalidException {
         UserDO newUser;
-        if (userDO.getUsername() == null || userDO.getPassword() == null) {
-            throw new DataIntegrityViolationException("Email and/or Passoword are missing");
-        }
-        if (!EmailValidator.getInstance().isValid(userDO.getUsername())) {
-            throw new EmailInvalidException("Email has an invalid format.");
-        }
+        checkUserExceptions(userDO);
         try {
             newUser = userRepository.save(userDO);
         } catch (DataIntegrityViolationException e) {
@@ -60,16 +55,23 @@ public class DefaultUserService implements UserService {
     @Override
     public UserDO login(UserDO userDO) throws EntityNotFoundException, EmailInvalidException {
         UserDO user;
+        checkUserExceptions(userDO);
+        user = userRepository.findByUsername(userDO.getUsername());
+        if (user == null) {
+            throw new EntityNotFoundException("User does not exist!");
+        }
+        if (!user.getPassword().equals(userDO.getPassword())) {
+            throw new DataIntegrityViolationException("Email and/or Passoword are wrong");
+        }
+        return user;
+    }
+
+    private void checkUserExceptions(UserDO userDO) throws EmailInvalidException {
         if (userDO.getUsername() == null || userDO.getPassword() == null) {
             throw new DataIntegrityViolationException("Email and/or Passoword are missing");
         }
         if (!EmailValidator.getInstance().isValid(userDO.getUsername())) {
             throw new EmailInvalidException("Email has an invalid format.");
         }
-        user = userRepository.findByUsername(userDO.getUsername());
-        if (user == null) {
-            throw new EntityNotFoundException("User does not exist!");
-        }
-        return user;
     }
 }
